@@ -1,0 +1,2 @@
+- Required libraries: FastLED, IRremote
+- Created on arduino uno
