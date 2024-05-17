@@ -1,2 +1,3 @@
 - Required libraries: FastLED, IRremote
 - Created on arduino uno
+- Also you need PlatformIO to run it
