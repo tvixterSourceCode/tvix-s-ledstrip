@@ -6,6 +6,9 @@
 const int num = 90;
 int max_bright = 255;
 
+int num_passed = 0;
+const int farness = 20;
+float mutliplier_of_w = 1;
 float eventlasttime = millis();
 float unbuttonlasttime = millis();
 bool gonna_light;
@@ -48,12 +51,12 @@ void change_led(CRGB color,int brightness, int from , int to, bool is_button)
 {
   if (button_pressed && is_button || !button_pressed)
   {
-  for (int i = from; i < to;i++)
-  {
-    leds[i] = color;
-    FastLED.setBrightness(brightness);
-  }
-    FastLED.show();
+    for (int i = from; i < to;i++)
+    {
+      leds[i] = color;
+      FastLED.setBrightness(brightness);
+    }
+      FastLED.show();
   }
   if (is_button)
   {
@@ -154,26 +157,31 @@ void check_remote()
         break;
       case one:
         mode = 'r';
-        change_led(CRGB(255,0,255),max_bright,0,num,true);
+        change_led(CRGB(255,255,255),max_bright,0,1,true);
         button_pressed = true;
         unbuttonlasttime = millis();
         break;
       case two:
         mode = 'b';
-        change_led(CRGB(255,50,0),max_bright,0,num,true);
+        change_led(CRGB(255,255,255),max_bright,0,2,true);
         button_pressed = true;
         unbuttonlasttime = millis();
         break;
       case three:
         mode = 'g';
-        change_led(CRGB(0,50,255),max_bright,0,num,true);
+        change_led(CRGB(255,255,255),max_bright,0,3,true);
         button_pressed = true;
         unbuttonlasttime = millis();
         setted = false;
         break;
+      case four:
+        mode = 'w';
+        change_led(CRGB(255,255,255),max_bright,0,4,true);
+        button_pressed = true;
+        unbuttonlasttime = millis();
+        break;
       }
-      Serial.println(red);
-      Serial.println(modecolor);
+      Serial.println(mode);
       IrReceiver.resume();
     }
 }
@@ -228,6 +236,32 @@ void loop() {
       setted = true;
     }
     break;
+  case 'w':
+    if (millis() - eventlasttime >= 500) //TODO
+    {
+      //Serial.print(num_passed);
+      num_passed = constrain((num_passed + 1) % num-1,0,num);
+      eventlasttime = millis();
+
+      change_led(CRGB(0,0,0),max_bright,0,constrain(num_passed - farness,0,num - farness),false);
+
+      for (int i = num_passed; i >= constrain(num_passed - farness,0,num); i--) // TODO: this only shows 0/255
+      {
+        //Serial.println(red * (1-(float)abs(i - num_passed) / farness));
+        change_led(CRGB((red * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w,(green * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w,(blue * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w),max_bright,i-1, i, false);
+      }
+
+
+      for (int i = num_passed+1; i <= constrain(num_passed + farness,0,num); i++)// TODO: this only shows 0/255
+      {
+        //Serial.println(red * (1-(float)abs(i - num_passed) / farness));
+        Serial.println(num_passed);
+        change_led(CRGB((red * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w,(green * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w,(blue * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w),max_bright,i,i+1,false);
+      }
+      change_led(CRGB(0,0,255),max_bright,num_passed,num_passed + 1,false); //center
+
+      change_led(CRGB(0,0,0),max_bright,constrain(num_passed + farness,10,90),num,false);
+    }
   }
   if (millis() - unbuttonlasttime >= 3000)
   {
