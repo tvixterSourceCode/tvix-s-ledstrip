@@ -7,7 +7,7 @@ const int num = 90;
 int max_bright = 255;
 
 int num_passed = 0;
-const int farness = 20;
+const int farness = 10;
 float mutliplier_of_w = 1;
 float eventlasttime = millis();
 float unbuttonlasttime = millis();
@@ -239,30 +239,30 @@ void loop() {
   case 'w':
     if (millis() - eventlasttime >= .01) 
     {
-      //Serial.print(num_passed);
       //num_passed = constrain((num_passed + 1) % num-1,0,num);
       num_passed += 1;
-      num_passed = (num_passed) % num;
+      num_passed = (num_passed) % (num);
       eventlasttime = millis();
 
       change_led(CRGB(0,0,0),max_bright,0,constrain(num_passed - farness,0,num - farness),false);
 
       for (int i = num_passed; i >= constrain(num_passed - farness,0,num); i--) 
       {
-        //Serial.println(red * (1-(float)abs(i - num_passed) / farness));
         change_led(CRGB((red * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w,(green * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w,(blue * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w),max_bright,i-1, i, false);
       }
 
 
-      for (int i = num_passed+1; i <= constrain(num_passed + farness,0,num); i++)
+      for (int i = num_passed+1; i <= constrain(num_passed + farness,0,num-1); i++)
       {
-        //Serial.println(red * (1-(float)abs(i - num_passed) / farness));
         Serial.println(num_passed);
         change_led(CRGB((red * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w,(green * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w,(blue * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w),max_bright,i,i+1,false);
       }
+      
       change_led(CRGB(red,green,blue),max_bright,num_passed,num_passed + 1,false); //center
 
       change_led(CRGB(0,0,0),max_bright,constrain(num_passed + farness,10,90),num,false);
+
+      setted = true;
     }
     break;
   }
