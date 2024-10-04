@@ -56,7 +56,7 @@ void change_led(CRGB color,int brightness, int from , int to, bool is_button)
       leds[i] = color;
       FastLED.setBrightness(brightness);
     }
-      FastLED.show();
+    FastLED.show();
   }
   if (is_button)
   {
@@ -237,7 +237,7 @@ void loop() {
     }
     break;
   case 'w':
-    if (millis() - eventlasttime >= .01) 
+    if (millis() - eventlasttime >= 170) 
     {
       //num_passed = constrain((num_passed + 1) % num-1,0,num);
       num_passed += 1;
@@ -254,7 +254,6 @@ void loop() {
 
       for (int i = num_passed+1; i <= constrain(num_passed + farness,0,num-1); i++)
       {
-        Serial.println(num_passed);
         change_led(CRGB((red * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w,(green * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w,(blue * (1-(float)abs(i - num_passed) / farness))* mutliplier_of_w),max_bright,i,i+1,false);
       }
       
@@ -262,7 +261,7 @@ void loop() {
 
       change_led(CRGB(0,0,0),max_bright,constrain(num_passed + farness,10,90),num,false);
 
-      setted = true;
+      setted = false;
     }
     break;
   }
